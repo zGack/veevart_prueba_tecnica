@@ -1,0 +1,93 @@
+public class prueba_15 {
+    public prueba_15 () {}
+    
+    public static Boolean searchWord(integer row, integer col, string word, list<list<string>> matrix, list<integer> dir) {
+        
+        list<string> solutions = new list<string>();
+        
+        solutions.add(word.substring(0,1)+' - ['+row+','+col+']');
+        
+        integer w_idx = 1;
+        integer prev_w_idx = 0;
+        
+        row += dir[0];
+        col += dir[1];
+        
+        while (
+        	w_idx < word.length() &&
+            row >= 0 &&
+            col >= 0 &&
+            row < matrix.size() &&
+            col < matrix[row].size() &&
+            matrix[row][col].equals(word.substring(prev_w_idx,w_idx))
+        ) {
+            solutions.add(word.substring(prev_w_idx,w_idx)+' - ['+row+','+col+']');
+        	
+            row += dir[0];
+        	col += dir[1];
+            prev_w_idx = w_idx;
+            w_idx += 1;
+        }
+        
+        if (w_idx == word.length()) {
+            for (string solStep: solutions) {
+                system.debug(solStep);
+            }
+        }
+        
+        return w_idx == word.length();
+    }
+    
+    public static Boolean solve(list<list<string>> matrix, string word) {
+        Integer row = 0;
+        Boolean found = false;
+        
+        // SE ITERA SOBRE TODA LA MATRIX
+        while (row < matrix.size()) {
+            Integer col = 0;
+            while (col < matrix[row].size()) {
+                
+                // SE VERIFICA SI LA PRIMERA LETRA COINCIDE CON LA PRIMERA LETRA DE LA PALABRA OBJETIVO
+                if (matrix[row][col].equals(word.substring(0,1))) {
+                    // DIRECCIONES
+                    list<list<Integer>> dirs = new list<list<Integer>>
+                    {
+                        new list<Integer>{0,1}, // HORIZONTAL
+                        new list<Integer>{1,0}, // VERTICAL
+                        new list<Integer>{-1,1}, // DIAGONALES
+                        new list<Integer>{1,1},
+                        new list<Integer>{1,-1},
+                        new list<Integer>{-1,-1}
+                    };   	
+                        for (list<integer> dir: dirs) {
+                            found = searchWord(row, col, word, matrix, dir) || found;
+                        }
+                }
+                col++;
+            }
+            row++;
+        }
+        
+        return found;
+    }
+    
+    public static void main() {
+        list<string>matrix = new list<string>{'S O L', 'U N O', 'N U T'};
+        list<list<string>>matrixMod = new list<list<string>>();
+            
+        list<string>words = new list<string>{'SUN', 'SOL', 'LOT','ONU', 'RAY'};
+           
+        // SE COPIA LA MATRIX INICIAL A UNA LISTA DE LISTAS 
+        for(string row: matrix) {
+            list<string> row_tmp = row.split(' ');
+            matrixMod.add(row_tmp);
+       	}     
+        
+        for (string word: words) {
+            system.debug('Searching: '+word);
+            if (!solve(matrixMod, word)) {
+            	system.debug(word+' Not found');	   
+            }
+        }
+    }
+}
